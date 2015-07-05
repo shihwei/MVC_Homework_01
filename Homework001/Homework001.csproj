@@ -171,6 +171,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BankInformationController.cs" />
     <Compile Include="Controllers\ContractController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -295,6 +296,11 @@
     <Content Include="Views\Contract\Details.cshtml" />
     <Content Include="Views\Contract\Edit.cshtml" />
     <Content Include="Views\Contract\Index.cshtml" />
+    <Content Include="Views\BankInformation\Create.cshtml" />
+    <Content Include="Views\BankInformation\Delete.cshtml" />
+    <Content Include="Views\BankInformation\Details.cshtml" />
+    <Content Include="Views\BankInformation\Edit.cshtml" />
+    <Content Include="Views\BankInformation\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
