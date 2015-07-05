@@ -17,7 +17,7 @@ namespace Homework001.Controllers
         // GET: Customer
         public ActionResult Index()
         {
-            return View(db.客戶資料.ToList());
+            return View(db.客戶資料.Where(x => x.是否已刪除 == false).ToList());
         }
 
         // GET: Customer/Details/5
@@ -109,8 +109,8 @@ namespace Homework001.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶資料 客戶資料 = db.客戶資料.Find(id);
-            db.客戶資料.Remove(客戶資料);
+            客戶資料 customer = db.客戶資料.Find(id);
+            customer.是否已刪除 = true;
             db.SaveChanges();
             return RedirectToAction("Index");
         }

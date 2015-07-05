@@ -17,7 +17,7 @@ namespace Homework001.Controllers
         // GET: Contract
         public ActionResult Index()
         {
-            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料);
+            var 客戶聯絡人 = db.客戶聯絡人.Where(x => x.是否已刪除 == false).Include(客 => 客.客戶資料);
             return View(客戶聯絡人.ToList());
         }
 
@@ -114,8 +114,8 @@ namespace Homework001.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-            db.客戶聯絡人.Remove(客戶聯絡人);
+            客戶聯絡人 contract = db.客戶聯絡人.Find(id);
+            contract.是否已刪除 = true;
             db.SaveChanges();
             return RedirectToAction("Index");
         }

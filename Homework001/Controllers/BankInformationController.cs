@@ -17,7 +17,7 @@ namespace Homework001.Controllers
         // GET: BankInformation
         public ActionResult Index()
         {
-            var 客戶銀行資訊 = db.客戶銀行資訊.Include(客 => 客.客戶資料);
+            var 客戶銀行資訊 = db.客戶銀行資訊.Where(x => x.是否已刪除 == false).Include(客 => 客.客戶資料);
             return View(客戶銀行資訊.ToList());
         }
 
@@ -114,8 +114,8 @@ namespace Homework001.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-            db.客戶銀行資訊.Remove(客戶銀行資訊);
+            客戶銀行資訊 bank = db.客戶銀行資訊.Find(id);
+            bank.是否已刪除 = true;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
