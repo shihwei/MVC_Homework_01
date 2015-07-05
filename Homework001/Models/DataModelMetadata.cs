@@ -82,6 +82,7 @@ namespace Homework001.Models
 
         [Display(Name = "手機")]
         [StringLength(50)]
+        [RegularExpression(@"\d{4}-\d{6}", ErrorMessage = "格式必須為 9999-999999 的格式 ( e.g. 0911-123456 )")]
         public string 手機 { get; set; }
 
         [Display(Name = "電話")]
