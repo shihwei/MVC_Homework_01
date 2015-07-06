@@ -44,6 +44,18 @@
           <Property Name="電話" Type="nvarchar" MaxLength="50" />
           <Property Name="是否已刪除" Type="bit" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\ZHUANG\DOCUMENTS\VISUAL STUDIO 2013\PROJECTS\HOMEWORK001\HOMEWORK001\APP_DATA\客戶資料.MDF.dbo.vwCustomerSimpleView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwCustomerSimpleView">
+          <Key>
+            <PropertyRef Name="客戶名稱" />
+            <PropertyRef Name="聯絡人數量" />
+            <PropertyRef Name="銀行帳戶數量" />
+          </Key>
+          <Property Name="客戶名稱" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="聯絡人數量" Type="int" Nullable="false" />
+          <Property Name="銀行帳戶數量" Type="int" Nullable="false" />
+        </EntityType>
         <Association Name="FK_客戶銀行資訊_客戶資料">
           <End Role="客戶資料" Type="Self.客戶資料" Multiplicity="1" />
           <End Role="客戶銀行資訊" Type="Self.客戶銀行資訊" Multiplicity="*" />
@@ -72,6 +84,13 @@
           <EntitySet Name="客戶資料" EntityType="Self.客戶資料" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="客戶銀行資訊" EntityType="Self.客戶銀行資訊" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="客戶聯絡人" EntityType="Self.客戶聯絡人" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vwCustomerSimpleView" EntityType="Self.vwCustomerSimpleView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwCustomerSimpleView].[客戶名稱] AS [客戶名稱], 
+    [vwCustomerSimpleView].[聯絡人數量] AS [聯絡人數量], 
+    [vwCustomerSimpleView].[銀行帳戶數量] AS [銀行帳戶數量]
+    FROM [dbo].[vwCustomerSimpleView] AS [vwCustomerSimpleView]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_客戶銀行資訊_客戶資料" Association="Self.FK_客戶銀行資訊_客戶資料">
             <End Role="客戶資料" EntitySet="客戶資料" />
             <End Role="客戶銀行資訊" EntitySet="客戶銀行資訊" />
@@ -164,7 +183,18 @@
             <End Role="客戶資料" EntitySet="客戶資料" />
             <End Role="客戶聯絡人" EntitySet="客戶聯絡人" />
           </AssociationSet>
+          <EntitySet Name="vwCustomerSimpleView" EntityType="CustomerModel.vwCustomerSimpleView" />
         </EntityContainer>
+        <EntityType Name="vwCustomerSimpleView">
+          <Key>
+            <PropertyRef Name="客戶名稱" />
+            <PropertyRef Name="聯絡人數量" />
+            <PropertyRef Name="銀行帳戶數量" />
+          </Key>
+          <Property Name="客戶名稱" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="聯絡人數量" Type="Int32" Nullable="false" />
+          <Property Name="銀行帳戶數量" Type="Int32" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -210,6 +240,15 @@
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="手機" ColumnName="手機" />
                 <ScalarProperty Name="電話" ColumnName="電話" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwCustomerSimpleView">
+            <EntityTypeMapping TypeName="CustomerModel.vwCustomerSimpleView">
+              <MappingFragment StoreEntitySet="vwCustomerSimpleView">
+                <ScalarProperty Name="銀行帳戶數量" ColumnName="銀行帳戶數量" />
+                <ScalarProperty Name="聯絡人數量" ColumnName="聯絡人數量" />
+                <ScalarProperty Name="客戶名稱" ColumnName="客戶名稱" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
