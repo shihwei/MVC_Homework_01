@@ -48,17 +48,17 @@ namespace Homework001.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 contract)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && IsEmailDuplicated(contract))
             {
-                db.客戶聯絡人.Add(客戶聯絡人);
+                db.客戶聯絡人.Add(contract);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
-            return View(客戶聯絡人);
+            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", contract.客戶Id);
+            return View(contract);
         }
 
         // GET: Contract/Edit/5
@@ -82,16 +82,16 @@ namespace Homework001.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 contract)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && IsEmailDuplicated(contract))
             {
-                db.Entry(客戶聯絡人).State = EntityState.Modified;
+                db.Entry(contract).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
-            return View(客戶聯絡人);
+            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", contract.客戶Id);
+            return View(contract);
         }
 
         // GET: Contract/Delete/5
@@ -127,6 +127,17 @@ namespace Homework001.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private bool IsEmailDuplicated(客戶聯絡人 contract)
+        {
+            if (db.客戶聯絡人.Count(c => (c.客戶Id == contract.客戶Id && c.Email == contract.Email)) > 1)
+            {
+                ModelState.AddModelError("Email", "該客戶聯絡人，Email已存在，不可重複");
+                return false;
+            }
+
+            return true;
         }
     }
 }
