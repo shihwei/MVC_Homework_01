@@ -123,5 +123,11 @@ namespace Homework001.Controllers
             }
             base.Dispose(disposing);
         }
+
+
+        public ActionResult SimpleView()
+        {
+            return View(db.vwCustomerSimpleView.ToList());
+        }
     }
 }
