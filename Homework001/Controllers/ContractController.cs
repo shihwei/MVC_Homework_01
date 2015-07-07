@@ -131,7 +131,7 @@ namespace Homework001.Controllers
 
         private bool IsEmailDuplicated(客戶聯絡人 contract)
         {
-            if (db.客戶聯絡人.Count(c => (c.客戶Id == contract.客戶Id && c.Email == contract.Email)) > 1)
+            if (db.客戶聯絡人.Count(c => (c.客戶Id == contract.客戶Id && c.Email == contract.Email)) >= 1)
             {
                 ModelState.AddModelError("Email", "該客戶聯絡人，Email已存在，不可重複");
                 return false;
