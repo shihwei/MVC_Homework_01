@@ -12,12 +12,13 @@ namespace Homework001.Controllers
 {
     public class BankInformationController : Controller
     {
-        private CustomerEntities db = new CustomerEntities();
+        private 客戶銀行資訊Repository repo = RepositoryHelper.Get客戶銀行資訊Repository();
 
         // GET: BankInformation
         public ActionResult Index()
         {
-            var 客戶銀行資訊 = db.客戶銀行資訊.Where(x => x.是否已刪除 == false).Include(客 => 客.客戶資料);
+            var 客戶銀行資訊 = repo.All().Include(客 => 客.客戶資料);
+            
             return View(客戶銀行資訊.ToList());
         }
 
@@ -28,7 +29,7 @@ namespace Homework001.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
+            客戶銀行資訊 客戶銀行資訊 = repo.Find(id.Value);
             if (客戶銀行資訊 == null)
             {
                 return HttpNotFound();
@@ -39,7 +40,7 @@ namespace Homework001.Controllers
         // GET: BankInformation/Create
         public ActionResult Create()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱");
             return View();
         }
 
@@ -52,12 +53,13 @@ namespace Homework001.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.客戶銀行資訊.Add(客戶銀行資訊);
-                db.SaveChanges();
+                repo.Add(客戶銀行資訊);
+                repo.UnitOfWork.Commit();
+                
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
             return View(客戶銀行資訊);
         }
 
@@ -68,12 +70,12 @@ namespace Homework001.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
+            客戶銀行資訊 客戶銀行資訊 = repo.Find(id.Value);
             if (客戶銀行資訊 == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
             return View(客戶銀行資訊);
         }
 
@@ -86,11 +88,12 @@ namespace Homework001.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶銀行資訊).State = EntityState.Modified;
-                db.SaveChanges();
+                repo.UnitOfWork.Context.Entry(客戶銀行資訊).State = EntityState.Modified;
+                repo.UnitOfWork.Commit();
+                
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
             return View(客戶銀行資訊);
         }
 
@@ -101,7 +104,7 @@ namespace Homework001.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
+            客戶銀行資訊 客戶銀行資訊 = repo.Find(id.Value); 
             if (客戶銀行資訊 == null)
             {
                 return HttpNotFound();
@@ -114,9 +117,13 @@ namespace Homework001.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶銀行資訊 bank = db.客戶銀行資訊.Find(id);
-            bank.是否已刪除 = true;
-            db.SaveChanges();
+            客戶銀行資訊 bank = repo.Find(id);
+            if (bank != null)
+            {
+                repo.Delete(bank);
+                repo.UnitOfWork.Commit();
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -124,7 +131,7 @@ namespace Homework001.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repo.UnitOfWork.Context.Dispose();
             }
             base.Dispose(disposing);
         }
