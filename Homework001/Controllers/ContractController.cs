@@ -12,12 +12,13 @@ namespace Homework001.Controllers
 {
     public class ContractController : Controller
     {
-        private CustomerEntities db = new CustomerEntities();
+        private 客戶聯絡人Repository repo = RepositoryHelper.Get客戶聯絡人Repository();
 
         // GET: Contract
         public ActionResult Index()
         {
-            var 客戶聯絡人 = db.客戶聯絡人.Where(x => x.是否已刪除 == false).Include(客 => 客.客戶資料);
+            var 客戶聯絡人 = repo.All().Include(客 => 客.客戶資料);
+
             return View(客戶聯絡人.ToList());
         }
 
@@ -28,7 +29,8 @@ namespace Homework001.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
+            客戶聯絡人 客戶聯絡人 = repo.Find(id.Value);
+
             if (客戶聯絡人 == null)
             {
                 return HttpNotFound();
@@ -39,7 +41,7 @@ namespace Homework001.Controllers
         // GET: Contract/Create
         public ActionResult Create()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱");
             return View();
         }
 
@@ -50,14 +52,15 @@ namespace Homework001.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 contract)
         {
-            if (ModelState.IsValid && IsEmailDuplicated(contract))
+            if (ModelState.IsValid)
             {
-                db.客戶聯絡人.Add(contract);
-                db.SaveChanges();
+                repo.Add(contract);
+                repo.UnitOfWork.Commit();
+
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", contract.客戶Id);
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱", contract.客戶Id);
             return View(contract);
         }
 
@@ -68,12 +71,12 @@ namespace Homework001.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
+            客戶聯絡人 客戶聯絡人 = repo.Find(id.Value);
             if (客戶聯絡人 == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
         }
 
@@ -84,13 +87,14 @@ namespace Homework001.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 contract)
         {
-            if (ModelState.IsValid && IsEmailDuplicated(contract))
+            if (ModelState.IsValid)
             {
-                db.Entry(contract).State = EntityState.Modified;
-                db.SaveChanges();
+                repo.UnitOfWork.Context.Entry(contract).State = EntityState.Modified;
+                repo.UnitOfWork.Commit();
+
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", contract.客戶Id);
+            ViewBag.客戶Id = new SelectList(repo.All(), "Id", "客戶名稱", contract.客戶Id);
             return View(contract);
         }
 
@@ -101,7 +105,7 @@ namespace Homework001.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
+            客戶聯絡人 客戶聯絡人 = repo.Find(id.Value);
             if (客戶聯絡人 == null)
             {
                 return HttpNotFound();
@@ -114,9 +118,10 @@ namespace Homework001.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶聯絡人 contract = db.客戶聯絡人.Find(id);
-            contract.是否已刪除 = true;
-            db.SaveChanges();
+            客戶聯絡人 contract = repo.Find(id);
+            repo.Delete(contract);
+            repo.UnitOfWork.Commit();
+
             return RedirectToAction("Index");
         }
 
@@ -124,20 +129,22 @@ namespace Homework001.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repo.UnitOfWork.Context.Dispose();
             }
             base.Dispose(disposing);
         }
 
-        private bool IsEmailDuplicated(客戶聯絡人 contract)
-        {
-            if (db.客戶聯絡人.Count(c => (c.客戶Id == contract.客戶Id && c.Email == contract.Email)) >= 1)
-            {
-                ModelState.AddModelError("Email", "該客戶聯絡人，Email已存在，不可重複");
-                return false;
-            }
 
-            return true;
-        }
+        //TODO: 檢查同一客戶之聯絡人 Email是否重覆。
+        //private bool IsEmailDuplicated(客戶聯絡人 contract)
+        //{
+        //    if (db.客戶聯絡人.Count(c => (c.客戶Id == contract.客戶Id && c.Email == contract.Email)) >= 1)
+        //    {
+        //        ModelState.AddModelError("Email", "該客戶聯絡人，Email已存在，不可重複");
+        //        return false;
+        //    }
+
+        //    return true;
+        //}
     }
 }
